@@ -1,0 +1,48 @@
+<ion-header>
+  <custom-logged-header [title]="view | capitalize:true"></custom-logged-header>
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="view">
+      <ion-segment-button value="conversas">
+        Conversas
+      </ion-segment-button>
+      <ion-segment-button value="usuários">
+        Usuários
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+
+</ion-header>
+
+<ion-content padding>
+
+
+  <div [ngSwitch]="view">
+
+
+    <ion-list *ngSwitchCase="'conversas'" no-lines>
+      <button ion-item *ngFor="let chat of chats | async " (click)="onChatOpen(chat)">
+        <h2> {{ chat.title }} </h2>
+        <p *ngIf="chat.lastMessage; else customMessage" > {{ chat.timestamp | date: 'dd/MM/yyyy H:mm' }} - {{ chat.lastMessage }} </p>
+        <ng-template #customMessage>
+          <p>No messages</p>
+        </ng-template>
+      </button>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'usuários'" no-lines>
+      <h3 text-center> Usuários</h3>
+
+      <button ion-item *ngFor="let user of users | async" (click)="onChatCreate(user)">
+        {{ user.name }}
+      </button>
+    </ion-list>
+
+
+
+  </div>
+
+
+
+</ion-content>
