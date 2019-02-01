@@ -21,7 +21,8 @@ export class ChatPage {
 
 
   @ViewChild(Content) content: Content;
-  messages: Observable<Message[]>;
+  messages: AngularFireList<Message>;
+  viewMessages: Observable<Message[]>;
   pageTitle: string;
   sender: User;
   recipient: User;
@@ -54,23 +55,33 @@ export class ChatPage {
       .first()
       .subscribe((currentUser: User) => {
         this.sender = currentUser;
+
         this.chat1 = this.chatService.getDeepChat(this.sender.uid, this.recipient.uid);
         this.chat2 = this.chatService.getDeepChat(this.recipient.uid, this.sender.uid);
 
+        if(this.recipient.photo){
+          this.chat1
+          .valueChanges()
+          .subscribe((chat: Chat) => {
+            this.chatService.updatePhoto(this.chat1, chat.photo, this.recipient.photo);
+          })
+
+        }
+
         let doSubscription = () => {
-          this.messages.subscribe((messages: Message[]) => {
+
+          this.viewMessages = this.messages.valueChanges();
+
+          this.viewMessages.subscribe((messages: Message[]) => {
             this.scrollToBottom();
           })
         }
 
         this.messages = this.messageService
           .getMessages(this.sender.uid, this.recipient.uid);
-        console.log('teste');
 
-        console.log(this.messages);
 
-        this.messages
-
+        this.messages.valueChanges()
           .first()
           .subscribe((messages: Message[]) => {
 
@@ -126,7 +137,7 @@ export class ChatPage {
 
   private scrollToBottom(duration?: number): void {
     setTimeout(() => {
-      if (this.content) {
+      if (this.content._scroll) {
         this.content.scrollToBottom(duration || 300);
       }
 

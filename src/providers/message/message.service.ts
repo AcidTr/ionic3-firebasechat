@@ -3,8 +3,6 @@ import { HttpModule } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { Message } from '../../models/message.model';
 import { BaseService } from '../base/base.service';
-import { Observable } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -20,8 +18,8 @@ export class MessageService extends BaseService {
     return Promise.resolve(listMessages.push(message));
   }
 
-  getMessages(userId1: string, userId2: string): Observable<Message[]> {
-     return this.db.list(`/messages/${userId1}-${userId2}`,
+  getMessages(userId1: string, userId2: string): AngularFireList<Message> {
+     /*return this.db.list(`/messages/${userId1}-${userId2}`,
       ref => ref.limitToLast(30).orderByChild('timestamp'))
       .valueChanges()
       .pipe(
@@ -29,11 +27,11 @@ export class MessageService extends BaseService {
          return messages;
         }),
         catchError(this.handleObservableError)
-      );
-/*
+      );*/
+
     return this.db.list(`/messages/${userId1}-${userId2}`,
-      (ref) => ref.orderByChild('timestamp')
-    ).valueChanges()*/
+      (ref) => ref.limitToLast(30).orderByChild('timestamp')
+    )
 
   }
 

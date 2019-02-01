@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { BaseService } from '../base/base.service';
 import { map, catchError } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { FirebaseApp } from '@angular/fire';
 
 
 
@@ -14,11 +15,12 @@ import { AngularFireAuth } from '@angular/fire/auth';
 export class UserService extends BaseService {
 
   currentUser: AngularFireObject<User>;
-  users: Observable<any[]>;
+  users: Observable<User[]>;
 
   constructor(
     public auth: AngularFireAuth,
     public db: AngularFireDatabase,
+    public firebaseApp: FirebaseApp,
     public http: HttpModule) {
       super();
       //this.users= db.list('users').valueChanges();
@@ -27,12 +29,13 @@ export class UserService extends BaseService {
 
 
 
+
   }
 
   private setUsers(uidToExclude: string): void {
 
 
-    this.users = this.db.list(`/users`,
+    this.users = this.db.list<User>(`/users`,
     ref => ref.orderByChild('name'))
     .valueChanges()
     .pipe(
@@ -70,6 +73,12 @@ export class UserService extends BaseService {
 
   }
 
+  edit(user: {name:string, username: string, photo:string}): Promise<void> {
+    return this.currentUser
+    .update(user)
+    .catch(this.handlePromiseError)
+  }
+
   userExists(username: string): Observable<boolean>{
     return this.db.list('/users', ref => ref.orderByChild('username').equalTo(username)).valueChanges()
     .pipe(
@@ -85,6 +94,15 @@ export class UserService extends BaseService {
   get(userId: string): AngularFireObject<User>{
     return this.db.object<User>(`/users/${userId}`)
 
+  }
+
+
+  uploadPhoto(file: File, userId: string): firebase.storage.UploadTask {
+    return this.firebaseApp
+    .storage()
+    .ref()
+    .child(`/users/${userId}`)
+    .put(file);
   }
 
 }

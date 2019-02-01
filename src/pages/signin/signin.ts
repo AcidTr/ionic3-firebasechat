@@ -70,7 +70,7 @@ export class SigninPage {
       buttons: ['Ok']
     }).present();
   }
-
+  /*
   onHomePage(): void {
     this.navCtrl.push('HomePage')
     .then((hasAccess: boolean) => {
@@ -99,4 +99,5 @@ export class SigninPage {
 
   }
 
+  */
 }

@@ -12,6 +12,12 @@
     </ion-segment>
   </ion-toolbar>
 
+  <ion-toolbar>
+    <ion-searchbar spellcheck="true" animated (ionInput)="filterItems($event)">
+
+    </ion-searchbar>
+  </ion-toolbar>
+
 
 </ion-header>
 
@@ -23,8 +29,12 @@
 
     <ion-list *ngSwitchCase="'conversas'" no-lines>
       <button ion-item *ngFor="let chat of chats | async " (click)="onChatOpen(chat)">
+        <ion-avatar item-start>
+          <img [src]="chat.photo || 'assets/imgs/no-photo.jpg'">
+        </ion-avatar>
         <h2> {{ chat.title }} </h2>
-        <p *ngIf="chat.lastMessage; else customMessage" > {{ chat.timestamp | date: 'dd/MM/yyyy H:mm' }} - {{ chat.lastMessage }} </p>
+        <p *ngIf="chat.lastMessage; else customMessage"> {{ chat.timestamp | date: 'dd/MM/yyyy H:mm' }} - {{
+          chat.lastMessage }} </p>
         <ng-template #customMessage>
           <p>No messages</p>
         </ng-template>
@@ -35,6 +45,9 @@
       <h3 text-center> Usuários</h3>
 
       <button ion-item *ngFor="let user of users | async" (click)="onChatCreate(user)">
+        <ion-avatar item-start>
+          <img [src]="user.photo || 'assets/imgs/no-photo.jpg'">
+        </ion-avatar>
         {{ user.name }}
       </button>
     </ion-list>
